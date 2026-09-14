@@ -1,0 +1,39 @@
+name: Unread Email Digest
+
+on:
+  schedule:
+    # Runs every 2 hours at minute 15 UTC (e.g., 00:15, 02:15, 04:15, etc.)
+    - cron: '15 */2 * * *'
+  workflow_dispatch: # Allows manual triggering anytime via the GitHub Actions tab
+
+jobs:
+  run-digest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install google-genai google-api-python-client google-auth-oauthlib google-auth-httplib2 twilio python-dotenv
+
+      - name: Restore token.json and Run
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
+          TWILIO_WHATSAPP_NUMBER: ${{ secrets.TWILIO_WHATSAPP_NUMBER }}
+          MY_WHATSAPP_NUMBER: ${{ secrets.MY_WHATSAPP_NUMBER }}
+        run: |
+          cat << 'EOF' > token.json
+          ${{ secrets.GMAIL_TOKEN_JSON }}
+          EOF
+          python email_digest.py
