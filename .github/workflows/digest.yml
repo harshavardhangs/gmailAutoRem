@@ -1,10 +1,8 @@
 name: Unread Email Digest
-
 on:
   schedule:
-    # Runs every 2 hours at minute 15 UTC
-    - cron: '15 */2 * * *'
-  workflow_dispatch: # Allows manual trigger anytime from the Actions UI
+    - cron: '* * * * *'
+  workflow_dispatch:
 
 # Ensure the job has explicit write permissions to push git commits
 permissions:
