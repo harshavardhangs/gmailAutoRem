@@ -48,27 +48,47 @@ To run this pipeline, configure the following repository secrets under **Setting
 1. **Clone the repository:**
    ```bash
    git clone [https://github.com/](https://github.com/)<your-username>/gmailAutoRem.git
-   cd gmailAutoRem
 
-2.Install dependencies:
-    pip install google-genai google-api-python-client google-auth-oauthlib google-auth-httplib2 twilio python-dotenv
-3.Configure Google Cloud Console:
-4.Enable the Gmail API under your Google Cloud project.
-5.Configure the OAuth Consent Screen (User type: External, add your email under Test Users).
-    Create an OAuth 2.0 Client ID (Desktop Application) and download it as credentials.json into the root directory.
-6.Run once locally to generate token.json:
-    python email_digest.py
-7.Authorize the app in your browser window when prompted. Once complete, copy the contents of the generated token.json into the GMAIL_TOKEN_JSON GitHub secret.
+2. **Install dependencies:**
+```bash
+pip install google-genai google-api-python-client google-auth-oauthlib google-auth-httplib2 twilio python-dotenv
 
-⚙️ Repository Permissions
+```
+
+
+3. **Configure Google Cloud Console:**
+* Enable the **Gmail API** under your Google Cloud project.
+* Configure the **OAuth Consent Screen** (User type: *External*, add your email under *Test Users*).
+* Create an **OAuth 2.0 Client ID** (Desktop Application) and download it as `credentials.json` into the root directory.
+
+
+4. **Generate `token.json` locally:**
+```bash
+python email_digest.py
+
+```
+
+
+*Authorize the app in your browser window when prompted. Once complete, copy the contents of the generated `token.json` into the `GMAIL_TOKEN_JSON` GitHub secret.*
+
+---
+
+## ⚙️ Repository Permissions
+
 To allow the workflow to commit the keepalive heartbeat:
 
-Navigate to Settings → Actions → General.
+1. Navigate to **Settings** → **Actions** → **General**.
+2. Scroll down to **Workflow permissions**.
+3. Select **Read and write permissions** and click **Save**.
 
-Scroll to Workflow permissions.
-
-Select Read and write permissions and click Save.
-
-📄 License
-MIT License
 ---
+
+## 📄 License
+
+MIT License
+
+```
+
+```
+   cd gmailAutoRem
+
