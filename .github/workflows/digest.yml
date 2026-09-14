@@ -2,8 +2,7 @@ name: Unread Email Digest
 
 on:
   schedule:
-    # Runs every 15 minutes (GitHub requires >= 5 min intervals for cron)
-    - cron: '*/15 * * * *'
+    - cron: '10 */2 * * *'
   workflow_dispatch:
 
 # Ensure the job has explicit write permissions to push git commits
