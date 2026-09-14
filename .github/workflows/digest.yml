@@ -2,9 +2,13 @@ name: Unread Email Digest
 
 on:
   schedule:
-    # Runs every 2 hours at minute 15 UTC (e.g., 00:15, 02:15, 04:15, etc.)
+    # Runs every 2 hours at minute 15 UTC
     - cron: '15 */2 * * *'
-  workflow_dispatch: # Allows manual triggering anytime via the GitHub Actions tab
+  workflow_dispatch: # Allows manual trigger anytime from the Actions UI
+
+# Ensure the job has explicit write permissions to push git commits
+permissions:
+  contents: write
 
 jobs:
   run-digest:
@@ -13,12 +17,14 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          # Fetch full history to prevent shallow commit issues during push
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          cache: 'pip'
 
       - name: Install dependencies
         run: |
@@ -37,3 +43,28 @@ jobs:
           ${{ secrets.GMAIL_TOKEN_JSON }}
           EOF
           python email_digest.py
+
+      - name: Clean up sensitive files before git commit
+        if: always()
+        run: |
+          # Guarantee token.json is removed before any git operations run
+          rm -f token.json
+
+      - name: Keepalive Heartbeat Commit
+        run: |
+          # Only executes on the 1st and 15th day of every month to prevent clutter
+          CURRENT_DAY=$(date -u +%d)
+          if [ "$CURRENT_DAY" = "01" ] || [ "$CURRENT_DAY" = "15" ]; then
+            git config --global user.name "github-actions[bot]"
+            git config --global user.email "github-actions[bot]@users.noreply.github.com"
+            
+            # Update a hidden heartbeat timestamp file
+            date -u > .keepalive
+            
+            git add .keepalive
+            # [skip ci] prevents the heartbeat commit itself from triggering additional runs
+            git commit -m "chore(keepalive): automated repository heartbeat [skip ci]" || echo "No changes to commit"
+            git push origin main || echo "Nothing to push"
+          else
+            echo "Skipping keepalive heartbeat (runs only on 1st and 15th of the month)."
+          fi
